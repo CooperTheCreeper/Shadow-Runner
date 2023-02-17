@@ -6,32 +6,37 @@ public class PlayerMovement : MonoBehaviour
 {
 
     //ref to rigidbody
-    public Rigidbody2D rb;
+    private Rigidbody2D rb;
 
-    [Header ("Movement & Jumping")]
+    //access animator controller
+    private Animator anim;
+
     //movement and jump
-    public float moveSpeed;
-    public float jumpForce;
+    [Header ("Movement & Jumping")]
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpForce;
 
     //bool for movement
-    private bool runBegun;
+    private bool playerUnlocked;
 
-    [Header("Collision info")]
     //check for collision with ground
-    public float groundCheckDistance;
-    public LayerMask whatIsGround;
+    [Header("Collision info")]
+    [SerializeField] private float groundCheckDistance;
+    [SerializeField] private LayerMask whatIsGround;
     private bool isGrounded;
 
-    // Start is called before the first frame update
     void Start()
     {
-        
+        //give access to rigid and animator even though they are hidden, for cleanup
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (runBegun)
+        AnimatorControllers();
+
+        if (playerUnlocked)
             //set movement based off of public values
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
 
@@ -39,6 +44,14 @@ public class PlayerMovement : MonoBehaviour
 
         CheckInput();
 
+    }
+
+    private void AnimatorControllers()
+    {
+        //control blend tree animation for jump/fall & idle/move
+        anim.SetBool("isGrounded", isGrounded);
+        anim.SetFloat("xVelocity", rb.velocity.x);
+        anim.SetFloat("yVelocity", rb.velocity.y);
     }
 
     private void CheckCollision()
@@ -51,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Right"))
             //set button for movement
-            runBegun = true;
+            playerUnlocked = true;
 
         //Set button for jump
         if (Input.GetButtonDown("Jump") && isGrounded)
