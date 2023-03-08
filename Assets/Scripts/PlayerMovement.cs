@@ -19,19 +19,29 @@ public class PlayerMovement : MonoBehaviour
     //double jump
     [SerializeField] private float doubleJumpForce;
     private bool canDoubleJump;
-    
 
     //bool for movement
     private bool playerUnlocked;
 
+    //set up slide mechanic
+    [Header("Slide Info")]
+    [SerializeField] private float slideSpeed;
+    [SerializeField] private float slideTime;
+    [SerializeField] private float slideCooldown;
+    private float slideCooldownCounter;
+    private float slideTimeCounter;
+    private bool isSliding;
+
     //check for collision with ground
     [Header("Collision info")]
     [SerializeField] private float groundCheckDistance;
+    [SerializeField] private float ceilingCheckDistance;
     [SerializeField] private LayerMask whatIsGround;
     [SerializeField] private Transform wallCheck;
     [SerializeField] private Vector2 wallCheckSize;
     private bool isGrounded;
     private bool wallDetected;
+    private bool ceilingDetected;
 
     void Start()
     {
@@ -46,7 +56,11 @@ public class PlayerMovement : MonoBehaviour
         CheckCollision();
         AnimatorControllers();
 
-        if (playerUnlocked && !wallDetected)
+        //control for slide counter
+        slideTimeCounter -= Time.deltaTime;
+        slideCooldownCounter -= Time.deltaTime;
+
+        if (playerUnlocked)
             //set movement based off of public values
             Movement();
 
@@ -55,31 +69,50 @@ public class PlayerMovement : MonoBehaviour
             canDoubleJump = true;
         }
 
+        CheckForSlide();
 
         CheckInput();
+    }
 
+    private void CheckForSlide()
+    {
+        if (slideTimeCounter < 0 && !ceilingDetected)
+            isSliding = false;
     }
 
     private void Movement()
     {
-        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+        if (wallDetected)
+            return;
+
+        if (isSliding)
+            rb.velocity = new Vector2(slideSpeed, rb.velocity.y);
+
+        else
+            rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
     }
 
-    private void AnimatorControllers()
+    private void SlideButton()
     {
-        //control blend tree animation for jump/fall & idle/move
-        anim.SetBool("canDoubleJump", canDoubleJump);
-        anim.SetBool("isGrounded", isGrounded);
-        anim.SetFloat("xVelocity", rb.velocity.x);
-        anim.SetFloat("yVelocity", rb.velocity.y);
+        if(rb.velocity.x != 0 && slideCooldownCounter < 0)
+        {
+            isSliding = true;
+            slideTimeCounter = slideTime;
+            slideCooldownCounter = slideCooldown;
+        }
     }
 
-    private void CheckCollision()
+    private void JumpButton()
     {
-        //check if player is contacting ground
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
-        //check for wall interaction
-        wallDetected = Physics2D.BoxCast(wallCheck.position, wallCheckSize, 0, Vector2.zero, 0, whatIsGround);
+        if (isSliding)
+            return;
+
+        if (isGrounded)
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
+        else if (canDoubleJump)
+            canDoubleJump = false;
+            rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);       
     }
 
     private void CheckInput()
@@ -91,26 +124,40 @@ public class PlayerMovement : MonoBehaviour
         //Set button for jump
         if (Input.GetButtonDown("Jump"))
             JumpButton();
+
+        //set up key for slide (change later to button down)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+            SlideButton();
+
     }
 
-    private void JumpButton()
+    private void AnimatorControllers()
     {
-        if (isGrounded)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
-        else if (canDoubleJump)
-        {
-            canDoubleJump = false;
-            rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
-        }
-        
+        //control blend tree animation for jump/fall & idle/move
+        anim.SetFloat("xVelocity", rb.velocity.x);
+        anim.SetFloat("yVelocity", rb.velocity.y);
+
+        anim.SetBool("canDoubleJump", canDoubleJump);
+        anim.SetBool("isGrounded", isGrounded);
+        anim.SetBool("isSliding", isSliding);
+    }
+
+    private void CheckCollision()
+    {
+        //check if player is contacting ground
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        //check for ceiling when sliding
+        ceilingDetected = Physics2D.Raycast(transform.position, Vector2.up, ceilingCheckDistance, whatIsGround);
+        //check for wall interaction
+        wallDetected = Physics2D.BoxCast(wallCheck.position, wallCheckSize, 0, Vector2.zero, 0, whatIsGround);
     }
 
     private void OnDrawGizmos()
     {
         //Line to check ground check distance variable
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
+        //Line to check ceiling distance
+        Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y + ceilingCheckDistance));
         //Set up a wall check
         Gizmos.DrawWireCube(wallCheck.position, wallCheckSize);
     }
