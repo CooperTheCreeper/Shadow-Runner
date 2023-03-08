@@ -12,9 +12,14 @@ public class PlayerMovement : MonoBehaviour
     private Animator anim;
 
     //movement and jump
-    [Header ("Movement & Jumping")]
+    [Header("Movement & Jumping")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
+
+    //double jump
+    [SerializeField] private float doubleJumpForce;
+    private bool canDoubleJump;
+    
 
     //bool for movement
     private bool playerUnlocked;
@@ -30,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
         //give access to rigid and animator even though they are hidden, for cleanup
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+
     }
 
     void Update()
@@ -49,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
     private void AnimatorControllers()
     {
         //control blend tree animation for jump/fall & idle/move
+        anim.SetBool("canDoubleJump", canDoubleJump);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetFloat("xVelocity", rb.velocity.x);
         anim.SetFloat("yVelocity", rb.velocity.y);
@@ -67,8 +74,23 @@ public class PlayerMovement : MonoBehaviour
             playerUnlocked = true;
 
         //Set button for jump
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump"))
+            JumpButton();
+    }
+
+    private void JumpButton()
+    {
+        if (isGrounded)
+        {
+            canDoubleJump = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
+        else if (canDoubleJump)
+        {
+            canDoubleJump = false;
+            rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
+        }
+        
     }
 
     private void OnDrawGizmos()
