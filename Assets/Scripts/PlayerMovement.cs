@@ -28,7 +28,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Collision info")]
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private LayerMask whatIsGround;
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private Vector2 wallCheckSize;
     private bool isGrounded;
+    private bool wallDetected;
 
     void Start()
     {
@@ -40,16 +43,26 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        CheckCollision();
         AnimatorControllers();
 
-        if (playerUnlocked)
+        if (playerUnlocked && !wallDetected)
             //set movement based off of public values
-            rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+            Movement();
 
-        CheckCollision();
+        if (isGrounded)
+        {
+            canDoubleJump = true;
+        }
+
 
         CheckInput();
 
+    }
+
+    private void Movement()
+    {
+        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
     }
 
     private void AnimatorControllers()
@@ -65,6 +78,8 @@ public class PlayerMovement : MonoBehaviour
     {
         //check if player is contacting ground
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        //check for wall interaction
+        wallDetected = Physics2D.BoxCast(wallCheck.position, wallCheckSize, 0, Vector2.zero, 0, whatIsGround);
     }
 
     private void CheckInput()
@@ -82,7 +97,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded)
         {
-            canDoubleJump = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
         else if (canDoubleJump)
@@ -97,5 +111,7 @@ public class PlayerMovement : MonoBehaviour
     {
         //Line to check ground check distance variable
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
+        //Set up a wall check
+        Gizmos.DrawWireCube(wallCheck.position, wallCheckSize);
     }
 }
