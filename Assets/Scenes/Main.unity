@@ -836,6 +836,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3628ffa7de765f6469c3d5e1e07378af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  knockbackDir: {x: -12, y: 7}
   maxSpeed: 20
   speedMultiplier: 1.15
   milestoneIncreaser: 50

@@ -11,6 +11,11 @@ public class PlayerMovement : MonoBehaviour
     //access animator controller
     private Animator anim;
 
+    //Knockback
+    [Header("Knockback Info")]
+    [SerializeField] private Vector2 knockbackDir;
+    private bool isKnocked;
+
     //Speed Up and speed reset
     [Header("Speed Info")]
     [SerializeField] private float maxSpeed;
@@ -90,6 +95,18 @@ public class PlayerMovement : MonoBehaviour
         slideTimeCounter -= Time.deltaTime;
         slideCooldownCounter -= Time.deltaTime;
 
+        //Test Knockback until enemies enstated
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Knockback();
+        }
+
+        //Knockback stop command
+        if (isKnocked)
+        {
+            return;
+        }
+
         if (playerUnlocked)
             //set movement based off of public values
             Movement();
@@ -109,6 +126,15 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //---------------------------------------------------------------------------------------
+
+    private void Knockback()
+    {
+        isKnocked = true;
+        rb.velocity = knockbackDir;
+    }
+
+    private void CancelKnockback() => isKnocked = false;
+
     #region SpeedControl
     private void SpeedReset()
     {
@@ -269,6 +295,9 @@ public class PlayerMovement : MonoBehaviour
 
         //control animations for ledge climb
         anim.SetBool("canClimb", canClimb);
+
+        //control animations for knockback
+        anim.SetBool("isKnocked", isKnocked);
 
         //control animations for roll
         if(rb.velocity.y < -20)
