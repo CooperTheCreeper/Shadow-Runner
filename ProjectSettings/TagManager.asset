@@ -51,6 +51,9 @@ TagManager:
   - name: Collectible
     uniqueID: 26258103
     locked: 0
+  - name: Enemy
+    uniqueID: 84629023
+    locked: 0
   - name: shadows
     uniqueID: 348693073
     locked: 0
