@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,12 @@ public class PlayerMovement : MonoBehaviour
     //change player alpha for invinciblity indicator
     private SpriteRenderer sr;
 
+    //Player Death
+    private bool isDead;
+
+    //bool for movement
+    private bool playerUnlocked;
+
     //Knockback
     [Header("Knockback Info")]
     [SerializeField] private Vector2 knockbackDir;
@@ -21,7 +28,8 @@ public class PlayerMovement : MonoBehaviour
     private bool canBeKnocked = true;
 
     //Speed Up and speed reset
-    [Header("Speed Info")]
+    [Header("Move Info")]
+    [SerializeField] private float moveSpeed;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float speedMultiplier;
     private float defaultSpeed;
@@ -31,16 +39,13 @@ public class PlayerMovement : MonoBehaviour
     private float speedMilestone;
 
     //movement and jump
-    [Header("Movement & Jumping")]
-    [SerializeField] private float moveSpeed;
+    [Header("Jump Info")]
     [SerializeField] private float jumpForce;
 
     //double jump
     [SerializeField] private float doubleJumpForce;
     private bool canDoubleJump;
 
-    //bool for movement
-    private bool playerUnlocked;
 
     //set up slide mechanic
     [Header("Slide Info")]
@@ -106,6 +111,18 @@ public class PlayerMovement : MonoBehaviour
             Knockback();
         }
 
+        //Test Death until enemies enstated
+        if (Input.GetKeyDown(KeyCode.O) && !isDead)
+        {
+            StartCoroutine(Die());
+        }
+
+        //Death
+        if (isDead)
+        {
+            return;
+        }
+
         //Knockback stop command
         if (isKnocked)
         {
@@ -114,7 +131,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerUnlocked)
             //set movement based off of public values
-            Movement();
+            SetUpMovement();
 
         if (isGrounded)
         {
@@ -125,12 +142,23 @@ public class PlayerMovement : MonoBehaviour
 
         CheckForLedge();
 
-        CheckForSlide();
+        CheckForSlideCancel();
 
         CheckInput();
     }
 
     //---------------------------------------------------------------------------------------
+
+    private IEnumerator Die()
+    {
+        isDead = true;
+        canBeKnocked = false;
+        rb.velocity = knockbackDir;
+        anim.SetBool("isDead", true);
+
+        yield return new WaitForSeconds(1f);
+        rb.velocity = new Vector2(0, 0);
+    }
 
     private IEnumerator Invincibility()
     {
@@ -170,6 +198,8 @@ public class PlayerMovement : MonoBehaviour
         canBeKnocked = true;
     }
 
+    #region Knockback
+
     private void Knockback()
     {
         //make player invincible after knockback
@@ -187,7 +217,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void CancelKnockback() => isKnocked = false;
 
+    #endregion
+
     #region SpeedControl
+
     private void SpeedReset()
     {
         //reset speed of player
@@ -223,6 +256,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #endregion
+
+    #region LedgeClimbing
 
     private void CheckForLedge()
     {
@@ -266,13 +301,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void AllowLedgeGrab() => canGrabLedge = true;
 
-    private void CheckForSlide()
+    #endregion
+
+    private void CheckForSlideCancel()
     {
         if (slideTimeCounter < 0 && !ceilingDetected)
             isSliding = false;
     }
 
-    private void Movement()
+    private void SetUpMovement()
     {
         if (wallDetected)
         {
@@ -289,6 +326,8 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
         }
     }
+
+    #region Inputs
 
     private void SlideButton()
     {
@@ -334,6 +373,10 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    #endregion
+
+    #region Animations
+
     private void AnimatorControllers()
     {
         //control blend tree animation for jump/fall & idle/move
@@ -359,6 +402,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void RollAnimFinished() => anim.SetBool("canRoll", false);
+
+    #endregion
 
     private void CheckCollision()
     {
