@@ -11,10 +11,14 @@ public class PlayerMovement : MonoBehaviour
     //access animator controller
     private Animator anim;
 
+    //change player alpha for invinciblity indicator
+    private SpriteRenderer sr;
+
     //Knockback
     [Header("Knockback Info")]
     [SerializeField] private Vector2 knockbackDir;
     private bool isKnocked;
+    private bool canBeKnocked = true;
 
     //Speed Up and speed reset
     [Header("Speed Info")]
@@ -79,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
         //give access to rigid and animator even though they are hidden, for cleanup
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>();
 
         speedMilestone = milestoneIncreaser;
         defaultSpeed = moveSpeed;
@@ -127,8 +132,55 @@ public class PlayerMovement : MonoBehaviour
 
     //---------------------------------------------------------------------------------------
 
+    private IEnumerator Invincibility()
+    {
+        //player alpha blink
+        Color originalColor = sr.color;
+        Color darkenColor = new Color(sr.color.r, sr.color.g, sr.color.b, .5f);
+
+        canBeKnocked = false;
+        sr.color = darkenColor;
+        yield return new WaitForSeconds(.1f);
+
+        sr.color = originalColor;
+        yield return new WaitForSeconds(.1f);
+
+        sr.color = darkenColor;
+        yield return new WaitForSeconds(.15f);
+
+        sr.color = originalColor;
+        yield return new WaitForSeconds(.15f);
+
+        sr.color = darkenColor;
+        yield return new WaitForSeconds(.25f);
+
+        sr.color = originalColor;
+        yield return new WaitForSeconds(.25f);
+
+        sr.color = darkenColor;
+        yield return new WaitForSeconds(.3f);
+
+        sr.color = originalColor;
+        yield return new WaitForSeconds(.3f);
+
+        sr.color = darkenColor;
+        yield return new WaitForSeconds(.4f);
+
+        sr.color = originalColor;
+        canBeKnocked = true;
+    }
+
     private void Knockback()
     {
+        //make player invincible after knockback
+        if (!canBeKnocked)
+        {
+            return;
+        }
+
+        StartCoroutine(Invincibility());
+
+        //knockback player
         isKnocked = true;
         rb.velocity = knockbackDir;
     }
