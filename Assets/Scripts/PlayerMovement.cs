@@ -149,6 +149,21 @@ public class PlayerMovement : MonoBehaviour
 
     //---------------------------------------------------------------------------------------
 
+    public void Damage()
+    {
+        //Knockback player and reset speed if going max speed for second chance
+        if(moveSpeed >= maxSpeed)
+        {
+            Knockback();
+            SpeedReset();
+        }
+        //otherwise, kill player
+        else
+        {
+            StartCoroutine(Die());
+        }
+    }
+
     private IEnumerator Die()
     {
         isDead = true;
@@ -158,6 +173,8 @@ public class PlayerMovement : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         rb.velocity = new Vector2(0, 0);
+        yield return new WaitForSeconds(1f);
+        GameManager.instance.RestartLevel();
     }
 
     private IEnumerator Invincibility()
