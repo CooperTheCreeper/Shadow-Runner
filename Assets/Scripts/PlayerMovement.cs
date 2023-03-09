@@ -11,6 +11,16 @@ public class PlayerMovement : MonoBehaviour
     //access animator controller
     private Animator anim;
 
+    //Speed Up and speed reset
+    [Header("Speed Info")]
+    [SerializeField] private float maxSpeed;
+    [SerializeField] private float speedMultiplier;
+    private float defaultSpeed;
+    [Space]
+    [SerializeField] private float milestoneIncreaser;
+    private float defaultMilestoneIncrease;
+    private float speedMilestone;
+
     //movement and jump
     [Header("Movement & Jumping")]
     [SerializeField] private float moveSpeed;
@@ -48,8 +58,8 @@ public class PlayerMovement : MonoBehaviour
 
     //Freeze player at ledgecheck position
     [Header("Ledge Info")]
-    [SerializeField] private Vector2 offset1;
-    [SerializeField] private Vector2 offset2;
+    [SerializeField] private Vector2 offset1; //offset for position BEFORE climb
+    [SerializeField] private Vector2 offset2; //offset for position AFTER climb
 
     private Vector2 climbBegunPosition;
     private Vector2 climbOverPosition;
@@ -64,6 +74,10 @@ public class PlayerMovement : MonoBehaviour
         //give access to rigid and animator even though they are hidden, for cleanup
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+
+        speedMilestone = milestoneIncreaser;
+        defaultSpeed = moveSpeed;
+        defaultMilestoneIncrease = milestoneIncreaser;
 
     }
 
@@ -85,11 +99,49 @@ public class PlayerMovement : MonoBehaviour
             canDoubleJump = true;
         }
 
+        SpeedController();
+
         CheckForLedge();
 
         CheckForSlide();
 
         CheckInput();
+    }
+
+    //---------------------------------------------------------------------------------------
+
+    private void SpeedReset()
+    {
+        //reset speed of player
+        moveSpeed = defaultSpeed;
+        milestoneIncreaser = defaultMilestoneIncrease;
+    }
+
+    private void SpeedController()
+    {
+        if (moveSpeed == maxSpeed)
+        {
+            return;
+        }
+
+        //check for milestone reach
+        if (transform.position.x > speedMilestone)
+        {
+            //change milestone
+            speedMilestone = speedMilestone + milestoneIncreaser;
+
+            //increase player speed
+            moveSpeed = moveSpeed * speedMultiplier;
+
+            //increase milestone distance
+            milestoneIncreaser = milestoneIncreaser * speedMultiplier;
+
+            //make sure movespeed isn't more than max speed
+            if(moveSpeed > maxSpeed)
+            {
+                moveSpeed = maxSpeed;
+            }
+        }
     }
 
     private void CheckForLedge()
@@ -137,13 +189,19 @@ public class PlayerMovement : MonoBehaviour
     private void Movement()
     {
         if (wallDetected)
+        {
+            SpeedReset();
             return;
+        }
 
         if (isSliding)
+        {
             rb.velocity = new Vector2(slideSpeed, rb.velocity.y);
-
+        }
         else
+        {
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+        }
     }
 
     private void SlideButton()
