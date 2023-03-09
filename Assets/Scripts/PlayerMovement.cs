@@ -109,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //---------------------------------------------------------------------------------------
-
+    #region SpeedControl
     private void SpeedReset()
     {
         //reset speed of player
@@ -144,12 +144,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    #endregion
+
     private void CheckForLedge()
     {
         if(ledgeDetected && canGrabLedge)
         {
             //stop grabbing ledge once it's grabbed
             canGrabLedge = false;
+
+            //fix roll bug on ledge climb
+            rb.gravityScale = 0;
 
             //get location of ledge
             Vector2 ledgePosition = GetComponentInChildren<LedgeDetection>().transform.position;
@@ -173,6 +178,9 @@ public class PlayerMovement : MonoBehaviour
     {
         //stop animation and allow player to continue, using event in animation
         canClimb = false;
+        //fix roll bug on ledge
+        rb.gravityScale = 5;
+
         transform.position = climbOverPosition;
         //fix double grab bug
         Invoke("AllowLedgeGrab", .1f);
@@ -261,7 +269,15 @@ public class PlayerMovement : MonoBehaviour
 
         //control animations for ledge climb
         anim.SetBool("canClimb", canClimb);
+
+        //control animations for roll
+        if(rb.velocity.y < -20)
+        {
+            anim.SetBool("canRoll", true);
+        }
     }
+
+    private void RollAnimFinished() => anim.SetBool("canRoll", false);
 
     private void CheckCollision()
     {
@@ -272,6 +288,8 @@ public class PlayerMovement : MonoBehaviour
         //check for wall interaction
         wallDetected = Physics2D.BoxCast(wallCheck.position, wallCheckSize, 0, Vector2.zero, 0, whatIsGround);
     }
+
+    //---------------------------------------------------------------------------------------
 
     private void OnDrawGizmos()
     {
