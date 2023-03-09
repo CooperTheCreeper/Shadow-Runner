@@ -43,6 +43,22 @@ public class PlayerMovement : MonoBehaviour
     private bool wallDetected;
     private bool ceilingDetected;
 
+    //Ledge grabbing
+    [HideInInspector] public bool ledgeDetected;
+
+    //Freeze player at ledgecheck position
+    [Header("Ledge Info")]
+    [SerializeField] private Vector2 offset1;
+    [SerializeField] private Vector2 offset2;
+
+    private Vector2 climbBegunPosition;
+    private Vector2 climbOverPosition;
+
+    private bool canGrabLedge = true;
+    private bool canClimb;
+
+    //---------------------------------------------------------------------------------------
+
     void Start()
     {
         //give access to rigid and animator even though they are hidden, for cleanup
@@ -69,10 +85,48 @@ public class PlayerMovement : MonoBehaviour
             canDoubleJump = true;
         }
 
+        CheckForLedge();
+
         CheckForSlide();
 
         CheckInput();
     }
+
+    private void CheckForLedge()
+    {
+        if(ledgeDetected && canGrabLedge)
+        {
+            //stop grabbing ledge once it's grabbed
+            canGrabLedge = false;
+
+            //get location of ledge
+            Vector2 ledgePosition = GetComponentInChildren<LedgeDetection>().transform.position;
+
+            //set player position before and after climb
+            climbBegunPosition = ledgePosition + offset1;
+            climbOverPosition = ledgePosition + offset2;
+
+            //reset climb ability after climb
+            canClimb = true;
+        }
+
+        //hold position of player and climbbegun position
+        if (canClimb)
+        {
+            transform.position = climbBegunPosition;
+        }
+    }
+
+    private void LedgeClimbOver()
+    {
+        //stop animation and allow player to continue, using event in animation
+        canClimb = false;
+        transform.position = climbOverPosition;
+        //fix double grab bug
+        Invoke("AllowLedgeGrab", .1f);
+    }
+
+    private void AllowLedgeGrab() => canGrabLedge = true;
 
     private void CheckForSlide()
     {
@@ -105,14 +159,19 @@ public class PlayerMovement : MonoBehaviour
     private void JumpButton()
     {
         if (isSliding)
+        {
             return;
+        }
 
         if (isGrounded)
+        {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-
+        }
         else if (canDoubleJump)
+        {
             canDoubleJump = false;
             rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);       
+        }
     }
 
     private void CheckInput()
@@ -137,9 +196,13 @@ public class PlayerMovement : MonoBehaviour
         anim.SetFloat("xVelocity", rb.velocity.x);
         anim.SetFloat("yVelocity", rb.velocity.y);
 
+        //control animations for double jump and slide
         anim.SetBool("canDoubleJump", canDoubleJump);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetBool("isSliding", isSliding);
+
+        //control animations for ledge climb
+        anim.SetBool("canClimb", canClimb);
     }
 
     private void CheckCollision()
