@@ -12,7 +12,13 @@ public class MovingTrap : Trap
     private int i;
 
     //set trap spawn to first moveposition
-    private void Start() => transform.position = movePoint[0].position;
+    //private void Start() => transform.position = movePoint[0].position;
+
+    protected override void Start()
+    {
+        base.Start();
+        transform.position = movePoint[0].position;
+    }
 
     private void Update()
     {

@@ -12,9 +12,18 @@ public class CoinGenerator : MonoBehaviour
     [SerializeField] private int minCoins;
     [SerializeField] private int maxCoins;
 
+    //change draw gizmo so i can see the placements
+    [SerializeField] private SpriteRenderer[] coinImg;
+
     // Start is called before the first frame update
     void Start()
     {
+        //only show sprite for placements and not in game
+        for (int i = 0; i < coinImg.Length; i++)
+        {
+            coinImg[i].sprite = null;
+        }
+
         //randomize number of coins generated
         amountOfCoins = Random.Range(minCoins, maxCoins);
 
