@@ -8,7 +8,7 @@ public class TriggerDeadZone : MonoBehaviour
     {
         if (collision.GetComponent<PlayerMovement>() != null)
         {
-            GameManager.instance.RestartLevel();
+            GameManager.instance.GameEnded();
         }
     }
 }

@@ -19,7 +19,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isDead;
 
     //bool for movement
-    private bool playerUnlocked;
+    [HideInInspector] public bool playerUnlocked;
+
+    //set up extra life visuals
+    [HideInInspector] public bool extraLife;
 
     //Knockback
     [Header("Knockback Info")]
@@ -105,17 +108,19 @@ public class PlayerMovement : MonoBehaviour
         slideTimeCounter -= Time.deltaTime;
         slideCooldownCounter -= Time.deltaTime;
 
-        //Test Knockback until enemies enstated
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Knockback();
-        }
+        extraLife = moveSpeed >= maxSpeed;
 
-        //Test Death until enemies enstated
-        if (Input.GetKeyDown(KeyCode.O) && !isDead)
-        {
-            StartCoroutine(Die());
-        }
+        //Test Knockback until enemies enstated
+        //if (Input.GetKeyDown(KeyCode.K))
+        //{
+        //    Knockback();
+        //}
+
+        ////Test Death until enemies enstated
+        //if (Input.GetKeyDown(KeyCode.O) && !isDead)
+        //{
+        //    StartCoroutine(Die());
+        //}
 
         //Death
         if (isDead)
@@ -152,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
     public void Damage()
     {
         //Knockback player and reset speed if going max speed for second chance
-        if(moveSpeed >= maxSpeed)
+        if(extraLife)
         {
             Knockback();
             SpeedReset();
@@ -171,10 +176,11 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = knockbackDir;
         anim.SetBool("isDead", true);
 
+        Time.timeScale = .6f;
+
         yield return new WaitForSeconds(1f);
         rb.velocity = new Vector2(0, 0);
-        yield return new WaitForSeconds(1f);
-        GameManager.instance.RestartLevel();
+        GameManager.instance.GameEnded();
     }
 
     private IEnumerator Invincibility()
@@ -376,9 +382,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckInput()
     {
-        if (Input.GetButtonDown("Right"))
-            //set button for movement
-            playerUnlocked = true;
+        //if (Input.GetButtonDown("Right"))
+        //    //set button for movement
+        //    playerUnlocked = true;
 
         //Set button for jump
         if (Input.GetButtonDown("Jump"))
