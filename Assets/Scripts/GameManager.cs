@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    public UI_Main ui;
+
     //lock unlock player with start
     public PlayerMovement player;
 
@@ -14,18 +16,24 @@ public class GameManager : MonoBehaviour
 
     [Header("Color Info")]
     public Color platformColor;
-    public Color playerColor = Color.white;
+    public Color playerColor;
 
 
     [Header("Score Info")]
     public int coins;
     public float distance;
+    public float score;
+
+    //---------------------------------------------------------------------------------------
 
     private void Awake()
     {
         instance = this;
-        //LoadColor(); //WHAT IS WRONG WITH YOU
+        Time.timeScale = 1;
+        //LoadColor(); //WHAT IS WRONG WITH YOU //Sort of working??? not really????
     }
+
+    //---------------------------------------------------------------------------------------
 
     public void SaveColor(float r, float g, float b)
     {
@@ -46,6 +54,8 @@ public class GameManager : MonoBehaviour
         sr.color = newColor;
     }
 
+    //---------------------------------------------------------------------------------------
+
     private void Update()
     {
         if(player.transform.position.x > distance)
@@ -54,11 +64,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //---------------------------------------------------------------------------------------
+
     public void UnlockPlayer() => player.playerUnlocked = true;
 
     public void RestartLevel()
     {
-        SaveInfo();
         SceneManager.LoadScene(0);
     }
       
@@ -68,7 +79,7 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefs.SetInt("Coins", savedCoins + coins);
 
-        float score = distance * coins;
+        score = distance * coins;
 
         PlayerPrefs.SetFloat("LastScore", score);
 
@@ -76,5 +87,11 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetFloat("HighScore", score);
         }
+    }
+
+    public void GameEnded()
+    {
+        SaveInfo();
+        ui.OpenEndGameUI();
     }
 }
