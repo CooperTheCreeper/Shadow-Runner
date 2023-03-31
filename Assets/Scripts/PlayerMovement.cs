@@ -55,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slideSpeed;
     [SerializeField] private float slideTime;
     [SerializeField] private float slideCooldown;
-    private float slideCooldownCounter;
+    [HideInInspector] public float slideCooldownCounter;
     private float slideTimeCounter;
     private bool isSliding;
 
@@ -353,7 +353,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region Inputs
 
-    private void SlideButton()
+    public void SlideButton()
     {
         if(rb.velocity.x != 0 && slideCooldownCounter < 0)
         {
@@ -363,7 +363,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void JumpButton()
+    public void JumpButton()
     {
         if (isSliding)
         {
