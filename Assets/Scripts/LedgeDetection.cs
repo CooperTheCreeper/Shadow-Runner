@@ -12,14 +12,22 @@ public class LedgeDetection : MonoBehaviour
     //reference the playermovement script
     [SerializeField] public PlayerMovement player;
 
+    //bullshit to ledge check for the enemy
+    [SerializeField] private Enemy enemy;
+
     //On trigger enter for detection
     private bool canDetected;
 
     private void Update()
     {
-        if (canDetected)
+        if (player != null && canDetected)
         {
             player.ledgeDetected = Physics2D.OverlapCircle(transform.position, radius, whatIsGround);
+        }
+
+        if (enemy !=null && canDetected)
+        {
+            enemy.ledgeDetected = Physics2D.OverlapCircle(transform.position, radius, whatIsGround);
         }
     }
 
