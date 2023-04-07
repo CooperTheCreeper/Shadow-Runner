@@ -845,8 +845,8 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Shadow Runner
-  metroPackageVersion: 
+  metroPackageName: ShadowRunner
+  metroPackageVersion: 1.0.0.0
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
@@ -854,7 +854,7 @@ PlayerSettings:
   metroCertificateNotAfter: 0000000000000000
   metroApplicationDescription: Shadow Runner
   wsaImages: {}
-  metroTileShortName: 
+  metroTileShortName: Shadow Runner
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0

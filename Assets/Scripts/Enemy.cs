@@ -5,11 +5,14 @@ public class Enemy : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
+    private PlayerMovement player;
 
     //move the RB
     [Header("Movement Details")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float distanceToRun;
+    private float maxDistance;
 
     //control movement
     public bool canMove;
@@ -44,32 +47,110 @@ public class Enemy : MonoBehaviour
     private bool canGrabLedge = true;
     private bool canClimb;
 
+    //animations for ground pound thingy
+    private bool justRespawned = true;
+
+    //increase floaty-ness
+    private float defaultGravityScale;
+
     //---------------------------------------------------------------------------------------
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        player = GameManager.instance.player;
+
+        rb.velocity = new Vector2(10, 15);
+        defaultGravityScale = rb.gravityScale;
+
+        rb.gravityScale = rb.gravityScale * .6f;
+
+        maxDistance = transform.position.x + distanceToRun;
     }
 
     private void Update()
     {
+
+        if(justRespawned)
+        {
+            if(rb.velocity.y < 0)
+            {
+                rb.gravityScale = defaultGravityScale * 2;
+            }
+
+            if (isGrounded)
+            {
+                rb.velocity = new Vector2(0, 0);
+            }
+
+        }
+
         CheckCollision();
         AnimatorControllers();
         Movement();
         CheckForLedge();
+        SpeedController();
+
+        if(transform.position.x > maxDistance)
+        {
+            canMove = false;
+            return;
+        }
 
         //have enemy jump if there is no ground on the check
-        if(isGrounded && !groundForward || wallDetected)
+        if(!groundForward || wallDetected)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            Jump();
         }
     }
 
     //---------------------------------------------------------------------------------------
 
+    private void Jump()
+    {
+        if (isGrounded)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
+    }
+
+    private void SpeedController()
+    {
+        bool playerAhead = player.transform.position.x > transform.position.x;
+        bool playerFarAway = Vector2.Distance(player.transform.position, transform.position) > 2.5f;
+
+        if (playerAhead)
+        {
+            if (playerFarAway)
+            {
+                moveSpeed = 25;
+            }
+            else
+            {
+                moveSpeed = 17;
+            }
+        }
+        else
+        {
+            if (playerFarAway)
+            {
+                moveSpeed = 11;
+            }
+            else
+            {
+                moveSpeed = 14;
+            }
+        }
+    }
+
     private void Movement()
     {
+        if (justRespawned)
+        {
+            return;
+        }
+
         if (canMove)
         {
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
@@ -132,6 +213,14 @@ public class Enemy : MonoBehaviour
         anim.SetFloat("yVelocity", rb.velocity.y);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetBool("canClimb", canClimb);
+        anim.SetBool("justRespawned", justRespawned);
+    }
+
+    private void AnimationTrigger()
+    {
+        rb.gravityScale = defaultGravityScale;
+        justRespawned = false;
+        canMove = true;
     }
 
     private void CheckCollision()
