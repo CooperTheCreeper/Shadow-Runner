@@ -24,6 +24,10 @@ public class PlayerMovement : MonoBehaviour
     //set up extra life visuals
     [HideInInspector] public bool extraLife;
 
+    //VFX
+    [Header("VFX")]
+    [SerializeField] private ParticleSystem dustFX;
+
     //Knockback
     [Header("Knockback Info")]
     [SerializeField] private Vector2 knockbackDir;
@@ -32,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
 
     //Speed Up and speed reset
     [Header("Move Info")]
+    [SerializeField] private float speedToSurvive = 18;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float speedMultiplier;
@@ -40,6 +45,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float milestoneIncreaser;
     private float defaultMilestoneIncrease;
     private float speedMilestone;
+
+    //More VFX for landing
+    private bool readyToLand;
 
     //movement and jump
     [Header("Jump Info")]
@@ -108,7 +116,8 @@ public class PlayerMovement : MonoBehaviour
         slideTimeCounter -= Time.deltaTime;
         slideCooldownCounter -= Time.deltaTime;
 
-        extraLife = moveSpeed >= maxSpeed;
+        //made extra life easier for player to get
+        extraLife = moveSpeed >= speedToSurvive;
 
         //Test Knockback until enemies enstated
         //if (Input.GetKeyDown(KeyCode.K))
@@ -145,6 +154,8 @@ public class PlayerMovement : MonoBehaviour
 
         SpeedController();
 
+        CheckForLanding();
+
         CheckForLedge();
 
         CheckForSlideCancel();
@@ -153,6 +164,20 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //---------------------------------------------------------------------------------------
+    private void CheckForLanding()
+    {
+        //VFX for landing
+        if (rb.velocity.y < -5 && !isGrounded)
+        {
+            readyToLand = true;
+        }
+
+        if (readyToLand && isGrounded)
+        {
+            dustFX.Play();
+            readyToLand = false;
+        }
+    }
 
     public void Damage()
     {
@@ -247,6 +272,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void SpeedReset()
     {
+        //fix for slide resetting speed
+        if (isSliding)
+        {
+            return;
+        }
+
         //reset speed of player
         moveSpeed = defaultSpeed;
         milestoneIncreaser = defaultMilestoneIncrease;
@@ -355,8 +386,16 @@ public class PlayerMovement : MonoBehaviour
 
     public void SlideButton()
     {
+        //Make sure button is not accessible if dead
+        if (isDead)
+        {
+            return;
+        }
+
         if(rb.velocity.x != 0 && slideCooldownCounter < 0)
         {
+            //VFX
+            dustFX.Play();
             isSliding = true;
             slideTimeCounter = slideTime;
             slideCooldownCounter = slideCooldown;
@@ -365,22 +404,32 @@ public class PlayerMovement : MonoBehaviour
 
     public void JumpButton()
     {
-        if (isSliding)
+        //Make sure button is not accessible if dead
+        if (isSliding || isDead)
         {
             return;
         }
 
+        //fix infinite roll animation
+        RollAnimFinished();
+
         if (isGrounded)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            AudioManager.instance.PlaySFX(Random.Range(1, 2));
+            Jump(jumpForce);
         }
         else if (canDoubleJump)
         {
             canDoubleJump = false;
-            AudioManager.instance.PlaySFX(Random.Range(1, 2));
-            rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);       
+            Jump(doubleJumpForce);       
         }
+    }
+
+    private void Jump(float force)
+    {
+        //VFX
+        dustFX.Play();
+        AudioManager.instance.PlaySFX(Random.Range(1, 2));
+        rb.velocity = new Vector2(rb.velocity.x, force);
     }
 
     private void CheckInput()
