@@ -11,6 +11,8 @@ public class UI_Main : MonoBehaviour
 
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject endGame;
+    [SerializeField] private GameObject exitGame;
+    [SerializeField] private GameObject controlsMenu;
 
     [Space]
     [SerializeField] private TextMeshProUGUI lastScoreText;
@@ -100,4 +102,6 @@ public class UI_Main : MonoBehaviour
     {
         SwitchMenuTo(endGame);
     }
+
+    public void ExitGame() => Application.Quit();
 }
