@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     //VFX
     [Header("VFX")]
     [SerializeField] private ParticleSystem dustFX;
+    [SerializeField] private ParticleSystem bloodFX;
 
     //Knockback
     [Header("Knockback Info")]
@@ -181,6 +182,9 @@ public class PlayerMovement : MonoBehaviour
 
     public void Damage()
     {
+        //if damaged, blood VFX
+        bloodFX.Play();
+
         //Knockback player and reset speed if going max speed for second chance
         if(extraLife)
         {
@@ -205,6 +209,7 @@ public class PlayerMovement : MonoBehaviour
         Time.timeScale = .6f;
 
         yield return new WaitForSeconds(1f);
+        Time.timeScale = 1f;
         rb.velocity = new Vector2(0, 0);
         GameManager.instance.GameEnded();
     }
