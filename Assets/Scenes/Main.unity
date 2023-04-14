@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 2bd8959f5fbd3644aa33af1a155fc147, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.385635, g: 0.596424, b: 0.8407875, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4368,6 +4368,10 @@ MonoBehaviour:
   ui: {fileID: 422583575}
   player: {fileID: 54050023}
   colorEntirePlatform: 0
+  skyBoxMat:
+  - {fileID: 2100000, guid: 2bd8959f5fbd3644aa33af1a155fc147, type: 2}
+  - {fileID: 2100000, guid: cc421da483ed06c49933077a621bff25, type: 2}
+  - {fileID: 2100000, guid: 1cf6f4c6e6e0518419839d3f5448dd99, type: 2}
   platformColor: {r: 0.78550965, g: 0.8509804, b: 0, a: 1}
   playerColor: {r: 1, g: 1, b: 1, a: 1}
   coins: 0
@@ -9159,7 +9163,7 @@ Camera:
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -19510,7 +19514,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1227637689}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 422583575}
+        m_TargetAssemblyTypeName: UI_Main, Assembly-CSharp
+        m_MethodName: SwitchSkyBox
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1227637689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27150,7 +27166,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1705135861}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 422583575}
+        m_TargetAssemblyTypeName: UI_Main, Assembly-CSharp
+        m_MethodName: SwitchSkyBox
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1705135861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55359,7 +55387,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6356956235308500575}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 422583575}
+        m_TargetAssemblyTypeName: UI_Main, Assembly-CSharp
+        m_MethodName: SwitchSkyBox
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!224 &6356956235308500513
 RectTransform:
   m_ObjectHideFlags: 0
