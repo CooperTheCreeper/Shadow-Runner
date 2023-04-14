@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2239459188922681452}
   - component: {fileID: 8058594600802154496}
   - component: {fileID: 7483079851247809029}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Trap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,3 +144,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33eca425a216d774ebcdd044e4548e44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chanceToSpawn: 60
