@@ -8,7 +8,9 @@ public class TriggerDeadZone : MonoBehaviour
     {
         if (collision.GetComponent<PlayerMovement>() != null)
         {
+            AudioManager.instance.PlaySFX(3);
             GameManager.instance.GameEnded();
+            Time.timeScale = .01f;
         }
     }
 }
