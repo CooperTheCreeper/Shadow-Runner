@@ -14,7 +14,11 @@ public class GameManager : MonoBehaviour
 
     public bool colorEntirePlatform;
 
-    [Header("Color Info")]
+    //Set up day night cycle
+    [Header("Skybox Materials")]
+    [SerializeField] private Material[] skyBoxMat;
+
+    [Header("Purchased Color")]
     public Color platformColor;
     public Color playerColor;
 
@@ -30,10 +34,30 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
         Time.timeScale = 1;
+
+        SetUpSkyBox(PlayerPrefs.GetInt("SkyBoxSetting"));
+
         //LoadColor(); //WHAT IS WRONG WITH YOU //Sort of working??? not really????
     }
 
     //---------------------------------------------------------------------------------------
+
+    public void SetUpSkyBox(int i)
+    {
+        //choose day or night skybox
+        if(i <= 1)
+        {
+            RenderSettings.skybox = skyBoxMat[i];
+        }
+        //randomize skybox
+        else
+        {
+            RenderSettings.skybox = skyBoxMat[Random.Range(0, skyBoxMat.Length)];
+        }
+        //save choice for next run
+        PlayerPrefs.SetInt("SkyBoxSetting", i);
+        
+    }
 
     public void SaveColor(float r, float g, float b)
     {

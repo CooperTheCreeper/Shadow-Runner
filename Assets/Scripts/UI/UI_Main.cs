@@ -11,6 +11,8 @@ public class UI_Main : MonoBehaviour
 
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject endGame;
+    [SerializeField] private GameObject exitGame;
+    [SerializeField] private GameObject controlsMenu;
 
     [Space]
     [SerializeField] private TextMeshProUGUI lastScoreText;
@@ -51,6 +53,12 @@ public class UI_Main : MonoBehaviour
         AudioManager.instance.PlaySFX(4);
 
         coinsText.text = PlayerPrefs.GetInt("Coins").ToString("#,#");
+    }
+
+    public void SwitchSkyBox(int index)
+    {
+        AudioManager.instance.PlaySFX(4);
+        GameManager.instance.SetUpSkyBox(index);
     }
 
     public void MuteButton()
@@ -100,4 +108,6 @@ public class UI_Main : MonoBehaviour
     {
         SwitchMenuTo(endGame);
     }
+
+    public void ExitGame() => Application.Quit();
 }
