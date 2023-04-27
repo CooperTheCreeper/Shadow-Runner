@@ -17,7 +17,7 @@ public class EnemyCreator : MonoBehaviour
             if(Random.Range(0,100)<= chanceToSpawn)
             {
                GameObject newEnemy = Instantiate(enemyPrefab, respawnPosition.position, Quaternion.identity);
-               Destroy(newEnemy, 30);
+               Destroy(newEnemy, 10);
             }
         }
     }

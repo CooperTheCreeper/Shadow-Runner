@@ -26657,6 +26657,9 @@ MonoBehaviour:
   - {fileID: 6892472595004552296, guid: 8c75784df75940a4e97cb9a94c1e0777, type: 3}
   - {fileID: 6892472595004552296, guid: b178f430f5754994abded1a5a5855bcd, type: 3}
   - {fileID: 6892472595004552296, guid: e8a144fda44d9414593669167f707dd2, type: 3}
+  - {fileID: 6892472595004552296, guid: 03021f2d55517e34dbbe52a0bdaa40d5, type: 3}
+  - {fileID: 6892472595004552296, guid: f90ff0e01bfd24a43a67d0ca5f96e040, type: 3}
+  - {fileID: 6892472595004552296, guid: 044ac29bb4f062f408832939a05682cc, type: 3}
   nextPartPosition: {x: 0, y: 0, z: 0}
   distanceToSpawn: 50
   distanceToDelete: 200

@@ -206,7 +206,7 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = knockbackDir;
         anim.SetBool("isDead", true);
 
-        Time.timeScale = .6f;
+        Time.timeScale = .5f;
 
         yield return new WaitForSeconds(1f);
         Time.timeScale = 1f;
